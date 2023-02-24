@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import Watch from './components/watch';
+import Watch from './components/Watch';
 
 function App() {
   return (

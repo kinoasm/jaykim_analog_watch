@@ -23,6 +23,12 @@ const Text = styled.div<{ top: number; left: number }>`
   position: absolute;
   top: ${({ top }) => top}px;
   left: ${({ left }) => left}px;
+  &.tooltip {
+    background-color: beige;
+    border: solid 1px black;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    color: #121212;
+  }
 `;
 
 const Hand = styled.div<{
@@ -76,6 +82,27 @@ const Watch = () => {
     minutes: 0,
     seconds: 0,
   });
+  const [timeNow, setTimeNow] = React.useState<string>('');
+  const [tooltipPosition, setTooltipPosition] = React.useState<{
+    left: number;
+    top: number;
+    show: boolean;
+  }>({ left: 0, top: 0, show: false });
+  const watchContainerRef = React.useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (watchContainerRef.current) {
+      setTooltipPosition({
+        top: event.clientY - 40,
+        left: event.clientX + 10,
+        show: true,
+      });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setTooltipPosition({ ...tooltipPosition, show: false });
+  };
 
   React.useEffect(() => {
     const intervalId = setInterval(() => {
@@ -90,6 +117,7 @@ const Watch = () => {
         minutes: (minutes * 6 + seconds * 0.1) % 360,
         seconds: (seconds * 6) % 360,
       };
+      setTimeNow(now.toLocaleTimeString('ko-KR'));
       setHandsAngles(handsAngles);
     }, 1000);
 
@@ -98,15 +126,19 @@ const Watch = () => {
     };
   }, []);
   return (
-    <WatchContainer>
+    <WatchContainer
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      ref={watchContainerRef}
+    >
       <WatchFace>
-        <Text top={190} left={380}>
+        <Text top={185} left={380}>
           3
         </Text>
-        <Text top={370} left={200}>
+        <Text top={370} left={195}>
           6
         </Text>
-        <Text top={190} left={10}>
+        <Text top={185} left={10}>
           9
         </Text>
         <Text top={0} left={190}>
@@ -131,6 +163,15 @@ const Watch = () => {
           color="black"
         />
       </WatchFace>
+      {tooltipPosition.show && (
+        <Text
+          top={tooltipPosition.top}
+          left={tooltipPosition.left}
+          className="tooltip"
+        >
+          {timeNow}
+        </Text>
+      )}
     </WatchContainer>
   );
 };
