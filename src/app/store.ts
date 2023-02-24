@@ -1,9 +1,9 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import counterReducer from '../features/counter/counterSlice';
+import { watchReducer } from '../ducks/watch';
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer,
+    watch: watchReducer,
   },
 });
 
